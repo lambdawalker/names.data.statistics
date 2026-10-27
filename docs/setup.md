@@ -75,7 +75,7 @@ For a raw INSEE CSV, supply its `.csv` path to the same command. Choose `2025-*`
 }
 ```
 
-Windows paths may use forward slashes, for example `C:/dev/names.data.statistics/dist/mcp-stdio.js`. No environment secrets are needed. Tools are `ibge_frequency` and `ibge_ranking`; local archives are not accessible through MCP. This server is reusable; enabling an orchestrator enrichment phase is a separate change.
+Windows paths may use forward slashes, for example `C:/dev/names.data.statistics/dist/mcp-stdio.js`. No environment secrets are needed. Tools are `ibge_frequency`, `ibge_ranking`, `list_datasets` and `query_dataset`; local archives are not imported through MCP. This server is reusable; enabling an orchestrator enrichment phase is a separate change.
 
 ## Storage compatibility
 
@@ -109,3 +109,22 @@ npm run import:smoke
 ```
 
 The full scan can take a minute and prints only completion counts. It reads but does not extract or publish source files.
+
+## Make SSA and INSEE imports available to the agent
+
+After the filtered imports above complete, create an ignored `.env` file in this checkout:
+
+```dotenv
+STATISTICS_DATASETS={"ssa-john":"/absolute/path/output/john-ssa.jsonl","insee-jean":"/absolute/path/output/jean-insee.jsonl"}
+```
+
+Windows paths can use `C:/dev/names.data.statistics/output/john-ssa.jsonl`. Configure the MCP host to launch:
+
+```json
+{
+  "command": "node",
+  "args": ["--env-file=/absolute/path/names.data.statistics/.env", "/absolute/path/names.data.statistics/dist/mcp-stdio.js"]
+}
+```
+
+The agent first calls `list_datasets`, then `query_dataset` with a returned identifier and name. The host's file paths remain server-only. Configure up to 32 completed imports, each under 64 MiB. All source rows and the completion receipt are verified before any query result is returned. A missing, altered or incomplete receipt fails the query; a changed snapshot requires restarting at offset zero. The API names are case-insensitive with accents preserved. Use name-filtered imports rather than multi-gigabyte full-release output for this MCP interface.
