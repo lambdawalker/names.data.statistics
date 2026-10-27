@@ -107,3 +107,11 @@ CI runs offline tests and package checks on Linux/Windows, plus the real HTTP/SQ
 - [INSEE reuse and attribution](https://www.insee.fr/fr/information/2008466)
 - [IBGE v2 documentation](https://servicodados.ibge.gov.br/api/docs/nomes?versao=2)
 - [IBGE Census 2010 technical note](https://censo2010.ibge.gov.br/apps/nomes/nota.tecnica.pdf)
+
+## Managed local API and in-memory credentials
+
+This project ships `config.default.yaml` (loopback port **4322**) and `npm run serve`. In managed mode, the orchestrator launches the service with a per-boot control credential, checks its boot identity and sends the provider credential to authenticated `POST /v1/credentials`. Keys are held in memory; none belong in YAML. `{"token":null}` clears the credential. Public providers do not need a provider token.
+
+`GET /v1/tools` lists tool definitions; `POST /v1/tools/TOOL_NAME` invokes the existing validated MCP tool. Both require the per-boot control credential. `GET /health` returns non-secret identity/readiness information. `npm run mcp:remote` is a stdio bridge to the local API, using `NAMES_SERVICE_URL` and `NAMES_CONTROL_TOKEN` in the supervising host's memory. The original standalone `npm run mcp` remains available for compatibility.
+
+Use the orchestrator vault/fleet setup to avoid managing plaintext provider-key files. The managed port registry overrides the standalone default port at launch. Credentials/caches are discarded on rotation or process exit; slow requests crossing credential rotation are refused. Browser origins are rejected and listeners bind only to IPv4 loopback. See [the orchestrator setup](https://github.com/lambdawalker/ds.names.orchestrator/blob/main/docs/local-services.md).
