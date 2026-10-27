@@ -1,0 +1,12 @@
+export { readSsa } from './ssa.js';
+export { readInsee, readInseeZip } from './insee.js';
+export { openZip } from './zip.js';
+export { SourceError } from './errors.js';
+export { StatisticSchema } from './types.js';
+export type { StatisticRecord, SourceRecord, Release, InseeOptions, InseeSchema } from './types.js';
+export { IbgeClient } from './ibge.js';
+export type { ClientOptions, IbgeRecord, FrequencyOptions, RankingOptions } from './ibge.js';
+export { toDocumentInput, toStatisticFinding } from './evidence.js';
+export { writeImport } from './import.js';
+export { createStatisticsMcpServer } from './mcp.js';
+export type { McpOptions } from './mcp.js';
