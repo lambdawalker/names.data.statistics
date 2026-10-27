@@ -10,3 +10,4 @@ export { toDocumentInput, toStatisticFinding } from './evidence.js';
 export { writeImport } from './import.js';
 export { createStatisticsMcpServer } from './mcp.js';
 export type { McpOptions } from './mcp.js';
+export { queryImportedDataset } from './datasets.js';
